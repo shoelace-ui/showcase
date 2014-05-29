@@ -1,0 +1,20 @@
+doctype html
+html
+  head
+    meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    title= title
+    meta(name='description', content=description)
+    meta(name='author', content='shoelace-ui')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0')
+
+    block styles
+      each style in styles
+        link(href=style, rel="stylesheet")
+
+    | <!--[if lte IE 9]>
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js")
+    | <![endif]-->
+
+  body
+    block content
