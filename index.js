@@ -19,7 +19,21 @@ mkdirp.sync(tmpdir);
 var VIEWS = __dirname + '/views';
 var SHA_RE = /^[0-9a-fA-F]{40}$/;
 
+/**
+ * Forwarding headers
+ */
+
+var headers = {
+  host: 'x-orig-host',
+  path: 'x-orig-path',
+  port: 'x-orig-port',
+  proto: 'x-orig-proto'
+};
+
 module.exports = function(opts) {
+  opts = opts || {};
+  opts.base = headers;
+
   var app = stack(opts);
 
   app.set('view engine', 'jade');
