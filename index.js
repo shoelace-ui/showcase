@@ -79,10 +79,10 @@ module.exports = function(opts) {
   });
 
   app.get('/:org/:repo', addAglet, handleVersions);
-  app.get('/:org/:repo/:sha', addLinks, handleIndex);
+  app.get('/:org/:repo/:sha', validateHash, addLinks, handleIndex);
 
   ['typography', 'buttons'].forEach(function(page) {
-    app.get('/:org/:repo/:sha/' + page, addLinks, function(req, res) {
+    app.get('/:org/:repo/:sha/' + page, validateHash, addLinks, function(req, res) {
       res.render(VIEWS + '/' + page + '.jade', {
         showNav: true
       });
@@ -90,8 +90,8 @@ module.exports = function(opts) {
   });
 
   // assets
-  app.get('/:org/:repo/:sha/build/theme.css', handleStyle);
-  app.get('/:org/:repo/:sha/build/*', handleFile);
+  app.get('/:org/:repo/:sha/build/theme.css', validateHash, handleStyle);
+  app.get('/:org/:repo/:sha/build/*', validateHash, handleFile);
 
   return app;
 };
@@ -155,45 +155,11 @@ function handleIndex(req, res, next) {
   var org = req.params.org;
   var repo = req.params.repo;
 
-  if (render(sha)) return;
-
-  builder.remotes.resolve(org + '/' + repo, sha)
-    .next()
-    .value(function(err, branch) {
-      if (err) return next(err);
-      if (Array.isArray(branch)) return resolveRefs(branch, 0);
-      resolveRef(branch);
-    });
-
-  function render() {
-    if (!SHA_RE.test(sha)) return false;
-    res.render(VIEWS + '/index.jade', {
-      org: org,
-      repo: repo,
-      showNav: true
-    });
-    return true;
-  }
-
-  function resolveRefs(refs, i) {
-    var ref = refs[i];
-    if (!ref) return resolveRef(refs[0]);
-    if (SHA_RE.test(ref)) return redirect(ref);
-    resolveRefs(refs, i + 1);
-  }
-
-  function resolveRef(ref) {
-    var url = 'https://api.github.com/repos/' + org + '/' + repo + '/commits/' + ref;
-    request(url, {json: true}, function(err, resp) {
-      if (err) return next(err);
-      if (resp.statusCode !== 200) return next(new Error(resp.text));
-      redirect(resp.body.sha);
-    });
-  }
-
-  function redirect(ref) {
-    res.redirect(req.base + '/' + org + '/' + repo + '/' + ref);
-  }
+  res.render(VIEWS + '/index.jade', {
+    org: req.params.org,
+    repo: req.params.repo,
+    showNav: true
+  });
 }
 
 function handleStyle(req, res, next) {
@@ -263,6 +229,44 @@ function handleStyle(req, res, next) {
 function handleFile(req, res) {
   var dir = tmpdir + '/' + dirname(req);
   res.sendfile(dir + '/' + req.params[0]);
+}
+
+function validateHash(req, res, next) {
+  var sha = req.params.sha;
+  var org = req.params.org;
+  var repo = req.params.repo;
+
+  if (SHA_RE.test(sha)) return next();
+
+  builder.remotes.resolve(org + '/' + repo, sha)
+    .next()
+    .value(function(err, branch) {
+      if (err) return next(err);
+      if (Array.isArray(branch)) return resolveRefs(branch, 0);
+      resolveRef(branch);
+    });
+
+  function resolveRefs(refs, i) {
+    var ref = refs[i];
+    if (!ref) return resolveRef(refs[0]);
+    if (SHA_RE.test(ref)) return redirect(ref);
+    resolveRefs(refs, i + 1);
+  }
+
+  function resolveRef(ref) {
+    var url = 'https://api.github.com/repos/' + org + '/' + repo + '/commits/' + ref;
+    request(url, {json: true}, function(err, resp) {
+      if (err) return next(err);
+      if (resp.statusCode !== 200) return next(new Error(resp.text));
+      redirect(resp.body.sha);
+    });
+  }
+
+  function redirect(ref) {
+    var base = '/' + org + '/' + repo;
+    var rest = req.url.replace(base + '/' + sha, '');
+    res.redirect(req.base + base + '/' + ref + rest);
+  }
 }
 
 function dirname(req) {
