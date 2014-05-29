@@ -12,12 +12,27 @@ var hash = require('crypto').createHash;
 var builder = require('poe-ui-builder');
 var rimraf = require('rimraf');
 var co = require('co');
-var request = co(require('cogent'));
+var cogent = require('cogent');
 
 mkdirp.sync(tmpdir);
 
 var VIEWS = __dirname + '/views';
 var SHA_RE = /^[0-9a-fA-F]{40}$/;
+
+/**
+ * Setup client
+ */
+
+var GITHUB_USERNAME = process.env.GITHUB_USERNAME;
+var GITHUB_PASSWORD = process.env.GITHUB_PASSWORD;
+
+if (GITHUB_USERNAME && GITHUB_PASSWORD) {
+  cogent = cogent.extend({
+    auth: GITHUB_USERNAME + ':' + GITHUB_PASSWORD
+  });
+}
+
+var request = co(cogent);
 
 /**
  * Forwarding headers
