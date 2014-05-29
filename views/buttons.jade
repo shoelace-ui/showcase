@@ -3,22 +3,22 @@ extends layout
 block content
   style
     :stylus
-
+      .capitalize
+        text-transform capitalize
       section
         display inline-block
-        margin-top 20px
         width 100%
         > div
-          margin-left 20px
-          border-left 1px solid #ccc
-          padding-left 20px
-          width 200px
+          padding-right 20px
+          box-sizing border-box
+          width 25%
           float left
-          text-align center
           &:first-child
             border none
 
   mixin button(prefix, name)
+    h2.capitalize= name
+    block
     section
       div: input(class="#{prefix}-#{name}", type="button", value="input.#{prefix}-#{name}")
       div: input(class="#{prefix}-#{name} hover", type="button", value="input.#{prefix}-#{name}.hover")
