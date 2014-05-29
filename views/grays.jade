@@ -1,0 +1,35 @@
+extends layout
+
+block head
+  style
+    :stylus
+      [class*=gray]
+        color white
+        padding 10px
+
+      .gray--base
+        background gray--base
+      .gray--light
+        background gray--light
+      .gray--lighter
+        background gray--lighter
+      .gray--lightest
+        background gray--lightest
+      .gray--dark
+        background gray--dark
+      .gray--darker
+        background gray--darker
+      .gray--darkest
+        background gray--darkest
+
+block body
+  mixin gray(suffix)
+    p(class='gray--#{suffix}') gray--#{suffix}
+
+  +gray('base')
+  +gray('light')
+  +gray('lighter')
+  +gray('lightest')
+  +gray('dark')
+  +gray('darker')
+  +gray('darkest')
