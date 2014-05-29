@@ -53,6 +53,10 @@ module.exports = function(opts) {
 
   app.set('view engine', 'jade');
 
+  app.locals({
+    logo: opts.logo || 'http://i.imgur.com/ARDWcLZ.png'
+  });
+
   app.useBefore('router', '/', function defaults(req, res, next) {
     res.locals({
       base: req.base,
@@ -63,7 +67,7 @@ module.exports = function(opts) {
     next();
   });
 
-  app.get('/', function(req, res) {
+  app.get('/', addAglet, function(req, res) {
     if (opts.defaultTheme) return res.redirect(req.base + '/' + opts.defaultTheme);
     res.render(VIEWS + '/landing.jade');
   });
@@ -74,12 +78,14 @@ module.exports = function(opts) {
     res.redirect(url);
   });
 
-  app.get('/:org/:repo', handleVersions);
+  app.get('/:org/:repo', addAglet, handleVersions);
   app.get('/:org/:repo/:sha', addLinks, handleIndex);
 
   ['typography', 'buttons'].forEach(function(page) {
     app.get('/:org/:repo/:sha/' + page, addLinks, function(req, res) {
-      res.render(VIEWS + '/' + page + '.jade');
+      res.render(VIEWS + '/' + page + '.jade', {
+        showNav: true
+      });
     });
   });
 
@@ -96,6 +102,11 @@ function addLinks(req, res, next) {
   var sha = req.param('sha');
   var l = res.locals.location = req.base + '/' + org + '/' + repo + '/' + sha;
   res.locals.styles.push(l + '/build/theme.css');
+  next();
+}
+
+function addAglet(req, res, next) {
+  res.locals.styles.push(req.base + '/shoelace-ui/aglet/master/build/theme.css');
   next();
 }
 
@@ -158,7 +169,8 @@ function handleIndex(req, res, next) {
     if (!SHA_RE.test(sha)) return false;
     res.render(VIEWS + '/index.jade', {
       org: org,
-      repo: repo
+      repo: repo,
+      showNav: true
     });
     return true;
   }

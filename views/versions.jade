@@ -1,7 +1,8 @@
-- var link = org + '/' + repo
+extends layout
 
-h1= link
-ul
-  for ref in refs
-    li
-      a(href=ref.url)= ref.name
+block content
+  h1= org + '/' + repo
+  ul
+    for ref in refs
+      li
+        a(href=ref.url)= ref.name
