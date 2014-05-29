@@ -45,10 +45,10 @@ module.exports = function(opts) {
   });
 
   app.get('/:org/:repo', handleVersions);
-  app.get('/:org/:repo/:sha', addStyle, handleIndex);
+  app.get('/:org/:repo/:sha', addLinks, handleIndex);
 
   ['typography', 'buttons'].forEach(function(page) {
-    app.get('/:org/:repo/:sha/' + page, addStyle, function(req, res) {
+    app.get('/:org/:repo/:sha/' + page, addLinks, function(req, res) {
       res.render(VIEWS + '/' + page + '.jade');
     });
   });
@@ -60,8 +60,12 @@ module.exports = function(opts) {
   return app;
 };
 
-function addStyle(req, res, next) {
-  res.locals.styles.push(req.base + '/' + req.param('org') + '/' + req.param('repo') + '/' + req.param('sha') + '/build/theme.css');
+function addLinks(req, res, next) {
+  var org = req.param('org');
+  var repo = req.param('repo');
+  var sha = req.param('sha');
+  var l = res.locals.location = req.base + '/' + org + '/' + repo + '/' + sha;
+  res.locals.styles.push(l + '/build/theme.css');
   next();
 }
 
