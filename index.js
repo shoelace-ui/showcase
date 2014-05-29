@@ -49,6 +49,7 @@ module.exports = function(opts) {
   });
 
   app.get('/', function(req, res) {
+    if (opts.defaultTheme) return res.redirect(req.base + '/' + opts.defaultTheme);
     res.render(VIEWS + '/landing.jade');
   });
 
