@@ -1,0 +1,48 @@
+extends layout
+
+block content
+  style
+    :stylus
+
+      section
+        display inline-block
+        margin-top 20px
+        width 100%
+        > div
+          margin-left 20px
+          border-left 1px solid #ccc
+          padding-left 20px
+          width 200px
+          float left
+          text-align center
+          &:first-child
+            border none
+
+  mixin button(prefix, name)
+    section
+      div: input(class="#{prefix}-#{name}", type="button", value="input.#{prefix}-#{name}")
+      div: input(class="#{prefix}-#{name} hover", type="button", value="input.#{prefix}-#{name}.hover")
+      div: input(class="#{prefix}-#{name} active", type="button", value="input.#{prefix}-#{name}.active")
+      div: input(class="#{prefix}-#{name} disabled", type="button", value="input.#{prefix}-#{name}.disabled")
+    section
+      div: div(class="#{prefix}-#{name}") div.#{prefix}-#{name}
+      div: div(class="#{prefix}-#{name} hover") div.#{prefix}-#{name}.hover
+      div: div(class="#{prefix}-#{name} active") div.#{prefix}-#{name}.active
+      div: div(class="#{prefix}-#{name} disabled") div.#{prefix}-#{name}.disabled
+    section
+      div: a(class="#{prefix}-#{name}") a.#{prefix}-#{name}
+      div: a(class="#{prefix}-#{name} hover") a.#{prefix}-#{name}.hover
+      div: a(class="#{prefix}-#{name} active") a.#{prefix}-#{name}.active
+      div: a(class="#{prefix}-#{name} disabled") a.#{prefix}-#{name}.disabled
+    section
+      div: button(class="#{prefix}-#{name}") button.#{prefix}-#{name}
+      div: button(class="#{prefix}-#{name} hover") button.#{prefix}-#{name}.hover
+      div: button(class="#{prefix}-#{name} active") button.#{prefix}-#{name}.active
+      div: button(class="#{prefix}-#{name} disabled") button.#{prefix}-#{name}.disabled
+
+  +button("button", "default")
+  +button("button", "primary")
+  +button("button", "warning")
+  +button("button", "danger")
+  +button("button", "success")
+  +button("button", "transparent")
