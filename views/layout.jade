@@ -19,11 +19,12 @@ html
   body
     .main-header
       .main-header-logo
-        a(href="/")
-          img(src="http://i.imgur.com/ARDWcLZ.png")
-      ul.main-header-nav
-        li: a(href=location + "/typography"): span Typography
-        li: a(href=location + "/buttons"): span Buttons
+        a(href=(location || '/'))
+          img(src=logo)
+      if showNav
+        ul.main-header-nav
+          li: a(href=location + "/typography"): span Typography
+          li: a(href=location + "/buttons"): span Buttons
     .main-container
       .container
         block content
