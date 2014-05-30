@@ -1,6 +1,6 @@
 {
   "name": "shoelace-ui-showcase",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Showcase a shoelace theme",
   "main": "index.js",
   "scripts": {
