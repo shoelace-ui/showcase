@@ -23,9 +23,8 @@ html
           img(src=logo)
       if showNav
         ul.main-header-nav
-          li: a(href=location + "/typography"): span Typography
-          li: a(href=location + "/buttons"): span Buttons
-          li: a(href=location + "/grays"): span Grays
+          each page in pages
+            li: a(href=location + "/" + page.view): span= page.title
     .main-container
       .container
         block content

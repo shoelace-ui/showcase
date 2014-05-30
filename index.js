@@ -54,7 +54,12 @@ module.exports = function(opts) {
   app.set('view engine', 'jade');
 
   app.locals({
-    logo: opts.logo || 'http://i.imgur.com/ARDWcLZ.png'
+    logo: opts.logo || 'http://i.imgur.com/ARDWcLZ.png',
+    pages: [
+      {view: 'typography', title: 'Typography'},
+      {view: 'buttons', title: 'Buttons'},
+      {view: 'grays', title: 'Grays'}
+    ]
   });
 
   app.useBefore('router', '/', function defaults(req, res, next) {
@@ -81,9 +86,9 @@ module.exports = function(opts) {
   app.get('/:org/:repo', addAglet, handleVersions);
   app.get('/:org/:repo/:sha', validateHash, addLinks, handleIndex);
 
-  ['typography', 'buttons'].forEach(function(page) {
-    app.get('/:org/:repo/:sha/' + page, validateHash, addLinks, function(req, res) {
-      res.render(VIEWS + '/' + page + '.jade', {
+  app.locals.pages.forEach(function(page) {
+    app.get('/:org/:repo/:sha/' + page.view, validateHash, addLinks, function(req, res) {
+      res.render(VIEWS + '/' + page.view + '.jade', {
         showNav: true
       });
     });
@@ -196,16 +201,13 @@ function handleStyle(req, res, next) {
     };
     component.dependencies[org + '/' + repo] = sha;
 
-    fs.writeFile(dir + '/component.json', JSON.stringify(component), function(err) {
+    var opts = {
+      // TODO get this working
+      // dir: dir + '/components'
+    };
+    builder.styles(component, null, file, opts, function(err) {
       if (err) return error(err);
-      var opts = {
-        // TODO get this working
-        // dir: dir + '/components'
-      };
-      builder.styles(dir, null, file, opts, function(err) {
-        if (err) return error(err);
-        send();
-      });
+      send();
     });
   }
 
