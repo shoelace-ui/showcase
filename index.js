@@ -201,13 +201,16 @@ function handleStyle(req, res, next) {
     };
     component.dependencies[org + '/' + repo] = sha;
 
-    var opts = {
-      // TODO get this working
-      // dir: dir + '/components'
-    };
-    builder.styles(component, null, file, opts, function(err) {
+    fs.writeFile(dir + '/component.json', JSON.stringify(component), function(err) {
       if (err) return error(err);
-      send();
+      var opts = {
+        // TODO get this working
+        // dir: dir + '/components'
+      };
+      builder.styles(dir, null, file, opts, function(err) {
+        if (err) return error(err);
+        send();
+      });
     });
   }
 
