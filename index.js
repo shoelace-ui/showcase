@@ -58,7 +58,7 @@ module.exports = function(opts) {
     pages: [
       {view: 'typography', title: 'Typography'},
       {view: 'buttons', title: 'Buttons'},
-      {view: 'grays', title: 'Grays'}
+      // {view: 'grays', title: 'Grays'}
     ]
   });
 

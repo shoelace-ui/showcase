@@ -1,6 +1,6 @@
 extends layout
 
-block head
+block content
   style
     :stylus
       [class*=gray]
@@ -22,14 +22,13 @@ block head
       .gray--darkest
         background gray--darkest
 
-block body
   mixin gray(suffix)
     p(class='gray--#{suffix}') gray--#{suffix}
 
-  +gray('base')
-  +gray('light')
-  +gray('lighter')
   +gray('lightest')
+  +gray('lighter')
+  +gray('light')
+  +gray('base')
   +gray('dark')
   +gray('darker')
   +gray('darkest')
