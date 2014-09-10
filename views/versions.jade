@@ -4,5 +4,4 @@ block content
   h1= org + '/' + repo
   ul
     for ref in refs
-      li
-        a(href=ref.url)= ref.name
+      li: a.button-default(href=ref.url)= ref.name

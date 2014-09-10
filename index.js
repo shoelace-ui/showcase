@@ -54,11 +54,11 @@ module.exports = function(opts) {
   app.set('view engine', 'jade');
 
   app.locals({
-    logo: opts.logo || 'http://i.imgur.com/ARDWcLZ.png',
+    logo: opts.logo || 'http://i.imgur.com/T6IgSzq.gif',
     pages: [
       {view: 'typography', title: 'Typography'},
       {view: 'buttons', title: 'Buttons'},
-      // {view: 'grays', title: 'Grays'}
+      {view: 'grays', title: 'Grays'}
     ]
   });
 
@@ -95,8 +95,8 @@ module.exports = function(opts) {
   });
 
   // assets
-  app.get('/:org/:repo/:sha/build/theme.css', validateHash, handleStyle);
-  app.get('/:org/:repo/:sha/build/*', validateHash, handleFile);
+  app.get('/:org/:repo/:sha/dist/index.css', validateHash, handleStyle);
+  app.get('/:org/:repo/:sha/dist/*', validateHash, handleFile);
 
   return app;
 };
@@ -106,12 +106,12 @@ function addLinks(req, res, next) {
   var repo = req.param('repo');
   var sha = req.param('sha');
   var l = res.locals.location = req.base + '/' + org + '/' + repo + '/' + sha;
-  res.locals.styles.push(l + '/build/theme.css');
+  res.locals.styles.push(l + '/dist/index.css');
   next();
 }
 
 function addAglet(req, res, next) {
-  res.locals.styles.push(req.base + '/shoelace-ui/aglet/master/build/theme.css');
+  res.locals.styles.push(req.base + '/shoelace-ui/aglet/master/dist/index.css');
   next();
 }
 

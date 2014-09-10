@@ -1,0 +1,61 @@
+
+// Layout
+
+.main-header
+  background: white
+  border-bottom: 1px solid #ddd
+  display: flex
+  padding: 20px
+  position: fixed
+  width: 100%
+  z-index: 1
+
+  &-logo
+    background-size: contain
+    background-position: 50%
+    background-repeat: no-repeat
+    display: flex
+    flex: 1
+    max-height: 50px
+    max-width: 50px
+    margin-right: 10px
+
+  &-nav
+    display: flex
+    justify-content: flex-start
+    list-style: none
+    margin-bottom: 0
+    padding-left: 0
+
+  &-item
+    display: flex
+    padding-right: 20px
+
+    a
+    a:visited
+      color: #555
+    a:hover
+      color: #444
+      text-decoration: none
+
+.main-container
+  padding: 100px 50px 50px
+
+// Buttons
+
+.btn
+  &-section
+    display: flex
+    flex-direction: column
+    padding-bottom: 50px
+
+  &-row
+    display: flex
+    flex-direction: row
+    flex: 1
+    justify-content: space-around
+    padding-bottom: 10px
+
+  &-col
+    display: flex
+    flex-direction: column

@@ -8,6 +8,10 @@ html
     meta(name='author', content='shoelace-ui')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0')
 
+    style
+      :stylus
+        @require '../stylesheets/index.styl'
+
     block styles
       each style in styles
         link(href=style, rel="stylesheet")
@@ -18,13 +22,11 @@ html
 
   body
     .main-header
-      .main-header-logo
-        a(href=(location || '/'))
-          img(src=logo)
+      a.main-header-logo(href=(location || '/'), style="background-image: url('#{logo}')")
       if showNav
         ul.main-header-nav
           each page in pages
-            li: a(href=location + "/" + page.view): span= page.title
+            li.main-header-item: a(href=location + "/" + page.view): span= page.title
     .main-container
       .container
         block content

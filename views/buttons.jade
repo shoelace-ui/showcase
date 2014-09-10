@@ -1,44 +1,30 @@
 extends layout
 
 block content
-  style
-    :stylus
-      .capitalize
-        text-transform capitalize
-      section
-        display inline-block
-        width 100%
-        > div
-          padding-right 20px
-          box-sizing border-box
-          width 25%
-          float left
-          &:first-child
-            border none
-
   mixin button(prefix, name)
-    h2.capitalize= name
-    block
-    section
-      div: input(class="#{prefix}-#{name}", type="button", value="input.#{prefix}-#{name}")
-      div: input(class="#{prefix}-#{name} hover", type="button", value="input.#{prefix}-#{name}.hover")
-      div: input(class="#{prefix}-#{name} active", type="button", value="input.#{prefix}-#{name}.active")
-      div: input(class="#{prefix}-#{name} disabled", type="button", value="input.#{prefix}-#{name}.disabled")
-    section
-      div: div(class="#{prefix}-#{name}") div.#{prefix}-#{name}
-      div: div(class="#{prefix}-#{name} hover") div.#{prefix}-#{name}.hover
-      div: div(class="#{prefix}-#{name} active") div.#{prefix}-#{name}.active
-      div: div(class="#{prefix}-#{name} disabled") div.#{prefix}-#{name}.disabled
-    section
-      div: a(class="#{prefix}-#{name}") a.#{prefix}-#{name}
-      div: a(class="#{prefix}-#{name} hover") a.#{prefix}-#{name}.hover
-      div: a(class="#{prefix}-#{name} active") a.#{prefix}-#{name}.active
-      div: a(class="#{prefix}-#{name} disabled") a.#{prefix}-#{name}.disabled
-    section
-      div: button(class="#{prefix}-#{name}") button.#{prefix}-#{name}
-      div: button(class="#{prefix}-#{name} hover") button.#{prefix}-#{name}.hover
-      div: button(class="#{prefix}-#{name} active") button.#{prefix}-#{name}.active
-      div: button(class="#{prefix}-#{name} disabled") button.#{prefix}-#{name}.disabled
+    section.btn-section
+      block
+      .btn-row
+        .btn-col: input(class="#{prefix}-#{name}", type="button", value="input.#{prefix}-#{name}")
+        .btn-col: input(class="#{prefix}-#{name} hover", type="button", value="input.#{prefix}-#{name}.hover")
+        .btn-col: input(class="#{prefix}-#{name} active", type="button", value="input.#{prefix}-#{name}.active")
+        .btn-col: input(class="#{prefix}-#{name} disabled", type="button", value="input.#{prefix}-#{name}.disabled")
+      .btn-row
+        .btn-col: div(class="#{prefix}-#{name}") div.#{prefix}-#{name}
+        .btn-col: div(class="#{prefix}-#{name} hover") div.#{prefix}-#{name}.hover
+        .btn-col: div(class="#{prefix}-#{name} active") div.#{prefix}-#{name}.active
+        .btn-col: div(class="#{prefix}-#{name} disabled") div.#{prefix}-#{name}.disabled
+      .btn-row
+        .btn-col: a(class="#{prefix}-#{name}") a.#{prefix}-#{name}
+        .btn-col: a(class="#{prefix}-#{name} hover") a.#{prefix}-#{name}.hover
+        .btn-col: a(class="#{prefix}-#{name} active") a.#{prefix}-#{name}.active
+        .btn-col: a(class="#{prefix}-#{name} disabled") a.#{prefix}-#{name}.disabled
+      .btn-row
+        .btn-col: button(class="#{prefix}-#{name}") button.#{prefix}-#{name}
+        .btn-col: button(class="#{prefix}-#{name} hover") button.#{prefix}-#{name}.hover
+        .btn-col: button(class="#{prefix}-#{name} active") button.#{prefix}-#{name}.active
+        .btn-col: button(class="#{prefix}-#{name} disabled") button.#{prefix}-#{name}.disabled
+
 
   +button("button", "default")
   +button("button", "primary")
