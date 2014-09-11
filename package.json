@@ -29,5 +29,9 @@
     "rimraf": "^2.2.8",
     "simple-stack-common": "^0.2.3",
     "stylus": "^0.45.1"
+  },
+  "devDependencies": {
+    "mocha": "^1.21.4",
+    "should": "^4.0.4"
   }
 }

@@ -5,9 +5,10 @@
 var debug = require('debug')('showcase:stylus');
 var stylus = require('stylus');
 var fs = require('fs');
-var npm = require('npm');
 var merge = require('./utils').merge;
 var tmpdir = require('os').tmpdir() + '/shoelace-ui-showcase';
+var spawn = require('child_process').spawn;
+var rimraf = require('rimraf');
 
 var package = require('./package.json');
 
@@ -22,7 +23,83 @@ var defaults = {
   ]
 };
 
-exports.render = function render(string, options, fn){
+exports = module.exports = function(org, repo, ref, token, opts, fn) {
+  ref = ref || 'master';
+  var out = resolveCss(org, repo, ref);
+  var dir = resolve(org, repo, ref);
+
+  read(clearDir);
+
+  function clearDir(err, res) {
+    if (typeof res === 'string' && !opts.force) return fn(null, res);
+    debug('clearing directory ' + dir);
+    rimraf(dir, build);
+  }
+
+  function build() {
+    debug('running build');
+    exports.build(org, repo, ref, token, dir, done);
+  }
+
+  function done(err) {
+    if (err) return fn(err, formatErrorCss(err));
+    read(function(err, res) {
+      fn(err, res);
+    });
+  }
+
+  function read(cb) {
+    debug('reading ' + out);
+    fs.readFile(out, 'utf8', function(err, res) {
+      debug('read ' + out);
+      cb(err, res);
+    });
+  }
+};
+
+function formatErrorCss(err) {
+  return 'body:before {content: "' + (err.stack || err.message || err).replace(/\"/, '\\"').replace(/\n/, '\\n') + '";}';
+}
+
+function run(command, args, opts, fn) {
+  var proc = spawn(command, args, opts);
+  var error = '';
+  proc.stdout.on('data', function(data) {
+    process.stdout.write(data);
+  });
+  proc.stderr.on('data', function(data) {
+    process.stderr.write(data);
+    error += data;
+  });
+  proc.on('close', function(code) {
+    if (code === 0) return fn();
+    var err = new Error(error);
+    err.code = code;
+    fn(err);
+  });
+  return proc;
+}
+
+function resolve(org, repo, ref) {
+  return tmpdir + '/' +
+    sanitize(org) + '~' +
+    sanitize(repo) + '@' +
+    sanitize(ref);
+}
+
+function resolveCss(org, repo, ref) {
+  return resolve(org, repo, ref) + '.css';
+}
+
+function sanitize(value) {
+  return value.replace(/\//g, '-');
+}
+
+function formatGithub(org, repo, token) {
+  return 'https://' + (token ? token + ':x-oauth-basic@' : '') + 'github.com/' + org + '/' + repo + '.git';
+}
+
+exports.render = function (string, options, fn) {
   if (typeof fn !== 'function') {
     fn = options;
     options = {};
@@ -33,49 +110,51 @@ exports.render = function render(string, options, fn){
   var styl = stylus(string, options);
 
   options.import.forEach(function(imp){
-	  styl.import(imp);
+    styl.import(imp);
   });
 
   styl.render(fn);
 };
 
-exports.install = function install(path, fn){
-  var target = 'git+https://github.com/' + path + '.git';
-  npm.load(package, function(err){
-    if (err) return fn(err);
-    npm.commands.install([target], function(err, data){
-      if (err) return fn(err);
-      fn();
-    });
-  });
+exports.install = function(org, repo, ref, token, dir, fn) {
+  debug('npm install ' + dir);
+  run('npm', ['install'], {cwd: dir}, fn);
 };
 
-exports.build = function build(path, fn){
-  var org = path.split('/')[0];
-  var repo = path.split('/')[1];
-  if (org === 'shoelace-ui') repo = org + '-' + repo;
-  var root = __dirname + '/node_modules/' + repo;
-  var main = root + '/index.styl';
+exports.clone = function(org, repo, ref, token, target, fn) {
+  var url = formatGithub(org, repo, token);
+  debug('git clone -b ' + ref + ' ' + url + ' ' + target);
+  run('git', ['clone', '-b', ref, url, target], {}, fn);
+};
 
+exports.build = function build(org, repo, ref, token, dir, fn) {
   var options = {
     paths: [
-      root,
-      root + '/node_modules'
+      __dirname,
+      dir,
+      dir + '/node_modules'
     ]
   };
 
-  debug('build installing');
-  exports.install(path, function(err, data){
+  exports.clone(org, repo, ref, token, dir, install);
+
+  function install(err) {
     if (err) return fn(err);
-    debug('build reading', main);
-    fs.readFile(main, 'utf8', function(err, str){
-      if (err) return fn(err);
-      debug('build rendering');
-      exports.render(str, options, function(err, res){
-        if (err) return fn(err);
-        debug('build done');
-        fn(null, res);
-      });
-    });
-  });
+    exports.install(org, repo, ref, token, dir, load);
+  }
+
+  function load(err) {
+    if (err) return fn(err);
+    fs.readFile(dir + '/index.styl', 'utf8', render);
+  }
+
+  function render(err, str) {
+    if (err) return fn(err);
+    exports.render(str, options, done);
+  }
+
+  function done(err, res) {
+    if (err) return fn(err);
+    fs.writeFile(resolveCss(org, repo, ref), res || '', fn);
+  }
 };
