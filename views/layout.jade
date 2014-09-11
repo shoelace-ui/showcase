@@ -20,13 +20,13 @@ html
     script(src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js")
     | <![endif]-->
 
-  body
-    .main-header
-      a.main-header-logo(href=(location || '/'), style="background-image: url('#{logo}')")
-      if showNav
+  body(class=(page || "landing"))
+    if showNav
+      .main-header
+        a.main-header-logo(href=(location || "/"), style="background-image: url('#{logo}')")
         ul.main-header-nav
           each page in pages
             li.main-header-item: a(href=location + "/" + page.view): span= page.title
+
     .main-container
-      .container
-        block content
+      block content
